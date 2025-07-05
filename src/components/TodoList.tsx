@@ -5,6 +5,8 @@ import { Todo } from '../services/todoApi';
 import todoApi from '../services/todoApi';
 import './TodoList.css';
 import { PlusIcon } from '@heroicons/react/24/solid';
+import { GoogleLogin } from '@react-oauth/google';
+import { jwtDecode } from "jwt-decode";
 
 // TodoList.tsx
 // Main component for displaying and managing the todo list, including filters, sorting, and actions. Handles API integration and renders TodoItem components.
@@ -133,6 +135,20 @@ const TodoList: React.FC = () => {
       <div className="modal-overlay">
         <div className="modal-content">
           <h2>Login</h2>
+          <GoogleLogin
+            onSuccess={credentialResponse => {
+              if (credentialResponse.credential) {
+                const decoded: any = jwtDecode(credentialResponse.credential);
+                setUser(decoded.email);
+                localStorage.setItem('todoUser', decoded.email);
+                setShowLogin(false);
+              }
+            }}
+            onError={() => {
+              alert('Google Login Failed');
+            }}
+          />
+          <div style={{margin: '16px 0', textAlign: 'center', color: '#A1A1AA'}}>or</div>
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <input
               type="text"
@@ -170,7 +186,12 @@ const TodoList: React.FC = () => {
   return (
     <div className="todo-list">
       <div className="todo-header">
-        <h1>Todo App</h1>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+          <h1>Todo App</h1>
+          <div style={{ fontSize: '14px', color: '#A1A1AA', marginTop: '4px' }}>
+            Welcome, {user}
+          </div>
+        </div>
         <div className="todo-stats">
           {totalCount > 0 && (
             <span className="todo-count">
