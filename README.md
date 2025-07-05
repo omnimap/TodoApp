@@ -234,10 +234,6 @@ If Google login doesn't work:
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Submit a pull request
 
-## 📄 License
-
-This project is open source and available under the MIT License.
-
 ## 🎯 Future Enhancements
 
 - [ ] Dark/Light theme toggle
