@@ -1,0 +1,222 @@
+/* TodoItem.css
+   Styles for the todo item component, including modal, edit, and action buttons.
+*/
+.todo-item {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  border: 1px solid #f1f5f9;
+}
+
+.todo-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: #e2e8f0;
+}
+
+.todo-item.completed {
+  opacity: 0.7;
+  background: #fafafa;
+}
+
+.todo-item.completed .todo-title {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+.todo-content {
+  width: 100%;
+}
+
+.todo-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.todo-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.todo-title {
+  flex: 1;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #334155;
+  word-break: break-word;
+}
+
+.todo-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.todo-description {
+  margin: 8px 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.todo-meta {
+  margin-top: 10px;
+}
+
+.todo-date {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+/* Edit mode styles */
+.todo-edit {
+  width: 100%;
+}
+
+.edit-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #35363c;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+  transition: border-color 0.2s ease;
+  background: #181A20;
+  color: #fff;
+}
+
+.edit-input:focus {
+  outline: none;
+  border-color: #6366F1;
+}
+
+.edit-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #35363c;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  min-height: 70px;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+  background: #181A20;
+  color: #fff;
+}
+
+.edit-textarea:focus {
+  outline: none;
+  border-color: #6366F1;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* Button styles */
+.btn {
+  padding: 6px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  background: white;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn-save {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.btn-save:hover {
+  background: #059669;
+  border-color: #059669;
+}
+
+.btn-cancel {
+  background: #f8fafc;
+  color: #64748b;
+  border-color: #e2e8f0;
+}
+
+.btn-cancel:hover {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.btn-edit {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+  padding: 4px 6px;
+  min-width: auto;
+  font-size: 0.8rem;
+}
+
+.btn-edit:hover {
+  background: #fde68a;
+  border-color: #f59e0b;
+}
+
+.btn-delete {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+  padding: 4px 6px;
+  min-width: auto;
+  font-size: 0.8rem;
+}
+
+.btn-delete:hover {
+  background: #fecaca;
+  border-color: #f87171;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #23242b;
+  border-radius: 16px;
+  padding: 32px 24px;
+  max-width: 400px;
+  width: 90vw;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.25);
+  animation: modalIn 0.2s cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(40px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+} 
