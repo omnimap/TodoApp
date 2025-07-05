@@ -7,9 +7,10 @@ import { PlusIcon } from '@heroicons/react/24/solid';
 
 interface AddTodoProps {
   onAdd: (todo: Omit<Todo, 'id'>) => void;
+  userId?: string;
 }
 
-const AddTodo: React.FC<AddTodoProps> = ({ onAdd }) => {
+const AddTodo: React.FC<AddTodoProps> = ({ onAdd, userId }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
@@ -19,7 +20,8 @@ const AddTodo: React.FC<AddTodoProps> = ({ onAdd }) => {
       onAdd({
         title: title.trim(),
         description: description.trim() || undefined,
-        completed: false
+        completed: false,
+        userId: userId || undefined
       });
       setTitle('');
       setDescription('');

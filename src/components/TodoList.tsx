@@ -10,6 +10,14 @@ import { PlusIcon } from '@heroicons/react/24/solid';
 // Main component for displaying and managing the todo list, including filters, sorting, and actions. Handles API integration and renders TodoItem components.
 // Provides the main UI for the todo app.
 
+const getStoredUser = () => {
+  try {
+    return localStorage.getItem('todoUser') || '';
+  } catch {
+    return '';
+  }
+};
+
 const TodoList: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -17,16 +25,19 @@ const TodoList: React.FC = () => {
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
   const [sortBy, setSortBy] = useState<'date' | 'title'>('date');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [user, setUser] = useState<string>(getStoredUser());
+  const [showLogin, setShowLogin] = useState(!getStoredUser());
+  const [loginInput, setLoginInput] = useState('');
 
   useEffect(() => {
-    loadTodos();
-  }, []);
+    if (user) loadTodos();
+  }, [user]);
 
   const loadTodos = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await todoApi.getAllTodos();
+      const data = await todoApi.getAllTodos(user);
       setTodos(data);
     } catch (err) {
       setError('Failed to load todos. Please check if the API server is running.');
@@ -38,7 +49,7 @@ const TodoList: React.FC = () => {
 
   const handleAddTodo = async (newTodo: Omit<Todo, 'id'>) => {
     try {
-      const addedTodo = await todoApi.createTodo(newTodo);
+      const addedTodo = await todoApi.createTodo({ ...newTodo, userId: user });
       setTodos(prev => [...prev, addedTodo]);
       setShowAddModal(false);
     } catch (err) {
@@ -49,7 +60,7 @@ const TodoList: React.FC = () => {
 
   const handleToggleTodo = async (id: number) => {
     try {
-      const updatedTodo = await todoApi.toggleTodoStatus(id);
+      const updatedTodo = await todoApi.toggleTodoStatus(id, user);
       setTodos(prev => prev.map(todo => 
         todo.id === id ? updatedTodo : todo
       ));
@@ -61,7 +72,7 @@ const TodoList: React.FC = () => {
 
   const handleUpdateTodo = async (id: number, updatedTodo: Partial<Todo>) => {
     try {
-      const updated = await todoApi.updateTodo(id, updatedTodo);
+      const updated = await todoApi.updateTodo(id, { ...updatedTodo, userId: user });
       setTodos(prev => prev.map(todo => 
         todo.id === id ? updated : todo
       ));
@@ -73,7 +84,7 @@ const TodoList: React.FC = () => {
 
   const handleDeleteTodo = async (id: number) => {
     try {
-      await todoApi.deleteTodo(id);
+      await todoApi.deleteTodo(id, user);
       setTodos(prev => prev.filter(todo => todo.id !== id));
     } catch (err) {
       setError('Failed to delete todo. Please try again.');
@@ -81,7 +92,24 @@ const TodoList: React.FC = () => {
     }
   };
 
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loginInput.trim()) {
+      setUser(loginInput.trim());
+      localStorage.setItem('todoUser', loginInput.trim());
+      setShowLogin(false);
+    }
+  };
+
+  const handleLogout = () => {
+    setUser('');
+    localStorage.removeItem('todoUser');
+    setShowLogin(true);
+    setTodos([]);
+  };
+
   const filteredAndSortedTodos = todos
+    .filter(todo => todo.userId === user)
     .filter(todo => {
       if (filter === 'active') return !todo.completed;
       if (filter === 'completed') return todo.completed;
@@ -97,8 +125,31 @@ const TodoList: React.FC = () => {
       return dateB - dateA;
     });
 
-  const completedCount = todos.filter(todo => todo.completed).length;
-  const totalCount = todos.length;
+  const completedCount = filteredAndSortedTodos.filter(todo => todo.completed).length;
+  const totalCount = filteredAndSortedTodos.length;
+
+  if (showLogin) {
+    return (
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <h2>Login</h2>
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <input
+              type="text"
+              value={loginInput}
+              onChange={e => setLoginInput(e.target.value)}
+              placeholder="Enter your username"
+              className="add-todo-input"
+              autoFocus
+            />
+            <button type="submit" className="btn btn-add" disabled={!loginInput.trim()}>
+              Login
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -127,6 +178,9 @@ const TodoList: React.FC = () => {
             </span>
           )}
         </div>
+        <button className="btn btn-cancel" style={{ position: 'absolute', top: 24, right: 24 }} onClick={handleLogout}>
+          Logout
+        </button>
       </div>
 
       {error && (
@@ -145,7 +199,7 @@ const TodoList: React.FC = () => {
       {showAddModal && (
         <div className="modal-overlay" onClick={handleOverlayClick}>
           <div className="modal-content">
-            <AddTodo onAdd={handleAddTodo} />
+            <AddTodo onAdd={handleAddTodo} userId={user} />
             <button className="btn btn-cancel" style={{marginTop: 12}} onClick={() => setShowAddModal(false)}>Cancel</button>
           </div>
         </div>
